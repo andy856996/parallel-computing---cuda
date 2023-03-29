@@ -1,0 +1,12 @@
+gcc imrev.c im.c -o imrev
+gcc imrevT.c im.c -o imrevT -lpthread
+./imrev pic8k.bmp pic_8kv.bmp v
+./imrevT pic8k.bmp pic8k_v_T.bmp v 512
+
+
+gcc imrevTM.c im.c -o imrevTM -lpthread
+
+gcc matrix_mul.c -o matrix_mul -lpthread
+
+
+nvcc imrevG.cu -o imrevG
