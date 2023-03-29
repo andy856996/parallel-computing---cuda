@@ -1,10 +1,14 @@
 clc;clear all;
 
-a = rand(3,3);
-b = rand(3,5);
+a = round(rand(3,3)*10);
+b = round(rand(3,5)*10);
 
 % a = ones(3,3);
 % b = ones(3,5);
+
+
+a
+b
 
 disp(a*b);
 
