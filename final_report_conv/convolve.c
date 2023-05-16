@@ -1,4 +1,7 @@
 #include "convolve.h"
+#include <string.h>
+#define min(X, Y) (((X) < (Y)) ? (X) : (Y))
+#define max(X, Y) (((X) < (Y)) ? (Y) : (X))
 // convolution 1D int//
 int* convolve_int(int h[], int x[], int lenH, int lenX, int* lenY)
 {
@@ -69,6 +72,7 @@ int* convolve2D_int(int mask[], int kernal[],int m_R,int m_C,int k_R,int k_C)
 	}
 	return y_out;
 }
+
 // convolution 2D float//
 float* convolve2D_float(float mask[], float kernal[],int m_R,int m_C,int k_R,int k_C)
 {
@@ -95,6 +99,68 @@ float* convolve2D_float(float mask[], float kernal[],int m_R,int m_C,int k_R,int
 	        }
 	    }
 	}
+	return y_out;
+}
+// convolution 2D full//
+int* convolve2D_full_int(int mask[], int kernal[],int m_R,int m_C,int k_R,int k_C)
+{
+	int *mask_pad = (int*)malloc(sizeof(int) * (m_R + (k_R-1) * 2) * (m_C + (k_C-1) * 2));
+	int *kernal_pad = (int*)malloc(sizeof(int) * (k_R + (m_R-1) * 2) * (k_C + (m_C-1) * 2) );
+	// fill zero
+	memset(mask_pad, 0, sizeof(int) * (m_R + (k_R-1) * 2) * (m_C + (k_C-1) * 2));
+	memset(kernal_pad, 0, sizeof(int) * (k_R + (m_R-1) * 2) * (k_C + (m_C-1) * 2));
+	
+	const int mask_pad_R = (m_R + (k_R-1) * 2);const int mask_pad_C = (m_C + (k_C-1) * 2);
+	const int kernal_pad_R = (k_R + (m_R-1) * 2);const int kernal_pad_C = (k_C + (m_C-1) * 2);
+
+	int mp_idx_R = 0;int mp_idx_C = 0;
+	for(int i = k_R-1;i<=(k_R-1)+(m_R)-1;i++){
+		mp_idx_C = 0;
+		for(int j = k_C-1;j<=(k_C-1)+(m_C)-1;j++){
+			mask_pad[i*mask_pad_C+j] = mask[mp_idx_R*m_C+mp_idx_C];
+			mp_idx_C ++;
+		}
+		mp_idx_R++;
+	}
+	print_matrix_int(mask_pad, mask_pad_R,mask_pad_C,1);
+	int ker_idx_R = 0;int ker_idx_C = 0;
+	for(int i = m_R-1;i<=(m_R-1)+(k_R)-1;i++){
+		ker_idx_C = 0;
+		for(int j = m_C-1;j<=(m_C-1)+(k_C)-1;j++){
+			kernal_pad[i*kernal_pad_C+j] = kernal[ker_idx_R*k_C+ker_idx_C];
+			ker_idx_C ++;
+		}
+		ker_idx_R++;
+	}
+	print_matrix_int(kernal_pad, kernal_pad_R,kernal_pad_C,1);
+	int *y_out = (int*)malloc(sizeof(int) * (m_R+k_R-1) * (m_C+k_C-1));
+	memset(y_out, 0, sizeof(int) * (m_R+k_R-1) * (m_C+k_C-1));
+	int sum = 0;
+	int row_start,row_end,col_start,col_end;
+	for (int i = 0; i < (m_R+k_R-1); ++i)  // rows
+	{
+	    for (int j = 0; j < (m_C+k_C-1); ++j)  // columns
+	    {
+	    	row_start = max(i-m_R, 0);
+	    	row_end = min(i,k_R-1);
+            col_start = max(j-m_C, 0);
+            col_end = min(j,k_C-1);
+            
+	    	sum= 0;
+	        for (int k = row_start; k <= row_end; ++k)  // kernel rows
+	        {
+	            for (int l = col_start; l <= col_end; ++l)  // kernel columns
+	            {
+	            	sum += mask_pad[(i-k+k_R)*mask_pad_C+ (j-l+k_C)] * kernal_pad[k*kernal_pad_C+l];
+	            	printf("mp : %d\n",mask_pad[(i-k+k_R)*mask_pad_C+ (j-l+k_C)]);
+	            	printf("ker : %d\n",kernal_pad[k*kernal_pad_C+l]);
+	            	//y_out[i*m_C+j] += mask_pad[(i+x)*(m_C+k_C-1)+j+y]*kernal_pad[x*k_C+y];
+	            }
+				y_out[i*(m_C+k_C-1)+j] = sum;
+	        }
+	    }
+	}
+
 	return y_out;
 }
 int isequal(float* a, float* b, int size) {
