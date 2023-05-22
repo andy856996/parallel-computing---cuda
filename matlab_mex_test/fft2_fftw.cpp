@@ -82,7 +82,7 @@ void mexFunction(int nOutputs, mxArray *output_pointers[], int nInputs, const mx
 	//print_mat(data, R, C*2);
 	
 	fft2D(data, output, R, C);
-	print_mat(output,R,C*2);
+	//print_mat(output,R,C*2);
 	
 	output_pointers[0] = mxCreateDoubleMatrix(R, C*2, mxREAL);
 	put_mat_toMATLAB_mat(output,mxGetPr(output_pointers[0]),R,C*2);
