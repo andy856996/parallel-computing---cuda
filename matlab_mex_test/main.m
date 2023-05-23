@@ -1,16 +1,19 @@
 clc;clear;
-a =ones(3,3);
-b = ones(70,60);
+a =rand(300,100);
+b = rand(90,70);
 
+fftw_fft = fft_conv2d(a,b);
 
 %% 【CPU】org conv.
-post_conv = conventional_conv2d_full(a,b);
+%post_conv = conventional_conv2d_full(a,b);
 %%
 [ma,na]=size(a);[mb,nb]=size(b);
 a_zp = zeros(ma+mb-1, na+nb-1);
 b_zp = zeros(ma+mb-1, na+nb-1);
 a_zp(1:ma, 1:na)=a;
 b_zp(1:mb, 1:nb)=b;
+matlab_fft = ifft2(fft2(a_zp).*fft2(b_zp));
+sum(sum(fftw_fft)) - sum(sum(matlab_fft))
 %% 【CPU】FFT conv.
 [a_r,a_c] = fft_2d(a_zp);
 [b_r,b_c] = fft_2d(b_zp);

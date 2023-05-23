@@ -31,7 +31,57 @@ void fft2D(double* in, double* out, int R, int C)
     // Destroy the plan
     fftw_destroy_plan(plan);
 }
+void complex_mat_multiplication(fftw_complex *matrix1, fftw_complex *matrix2,fftw_complex *result , int len){
+	for (int i = 0; i < len; i++)
+	{
+		// Perform complex multiplication
+		result[i][0] = matrix1[i][0] * matrix2[i][0] - matrix1[i][1] * matrix2[i][1]; // Real part
+		result[i][1] = matrix1[i][0] * matrix2[i][1] + matrix1[i][1] * matrix2[i][0]; // Imaginary part
+	}
+}
+void fft_conv2d(double* mask, double* kernal,double *result, int R, int C)
+{
+    fftw_plan maskPlan;
+	fftw_plan kernalPlan;
+	fftw_plan resultPlan;
+    fftw_complex* maskComplex = reinterpret_cast<fftw_complex*>(mask);
+    fftw_complex* kernalComplex = reinterpret_cast<fftw_complex*>(kernal);
+	fftw_complex* resultComplex = reinterpret_cast<fftw_complex*>(result);
+	
+    // Create the plan for the forward transform
+    maskPlan = fftw_plan_dft_2d(R, C, maskComplex, maskComplex, FFTW_FORWARD, FFTW_ESTIMATE);
+    // Execute the forward transform
+    fftw_execute(maskPlan);
+	
+	kernalPlan = fftw_plan_dft_2d(R, C, kernalComplex, kernalComplex, FFTW_FORWARD, FFTW_ESTIMATE);
+	fftw_execute(kernalPlan);
+	
+	complex_mat_multiplication(maskComplex,kernalComplex,resultComplex,R*C);
+	
+	resultPlan = fftw_plan_dft_2d(R, C, resultComplex, resultComplex, FFTW_BACKWARD, FFTW_ESTIMATE);
+	fftw_execute(resultPlan);
+	
+    // Destroy the plan
+    fftw_destroy_plan(maskPlan);
+	fftw_destroy_plan(kernalPlan);
+	fftw_destroy_plan(resultPlan);
+}
 
+void ifft2D(double* in, double* out, int R, int C)
+{
+    fftw_plan plan;
+    fftw_complex* inComplex = reinterpret_cast<fftw_complex*>(in);
+    fftw_complex* outComplex = reinterpret_cast<fftw_complex*>(out);
+
+    // Create the plan for the forward transform
+    plan = fftw_plan_dft_2d(R, C, inComplex, outComplex, FFTW_FORWARD, FFTW_ESTIMATE);
+
+    // Execute the forward transform
+    fftw_execute(plan);
+
+    // Destroy the plan
+    fftw_destroy_plan(plan);
+}
 void print_mat(double *inMatrix,int R,int C){
 	for (int i = 0; i < R; ++i) {
         for (int j = 0; j < C; ++j) {
