@@ -1,3 +1,9 @@
+/*----------------------------------------------
+create by Ding Ze An
+Date : 2023 5 23
+National Taitung Unv.
+Email : andy856996@gamil.com
+----------------------------------------------*/
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -45,9 +51,6 @@ void print_mat_complex(double *inMatrix,int R,int C){
 		cout<<endl;
     }
 }
-
-
-
 
 void print_arr(double *inMatrix,int len){
 	for (int i = 0; i < len; ++i) {
@@ -152,8 +155,6 @@ void mexFunction(int nOutputs, mxArray *output_pointers[], int nInputs, const mx
 	padding_FFT_conv(mask_doubleArr_complex,maskPadding_doubleArr_complex,R_mask,C_mask*2,(R_mask+R_kernal-1),(C_mask+C_kernal-1) * 2);
 	padding_FFT_conv(kernal_doubleArr_complex,kernalPadding_doubleArr_complex,R_kernal,C_kernal*2,(R_mask+R_kernal-1),(C_mask+C_kernal-1) * 2);
 
-	
-	
 	fft_conv2d(maskPadding_doubleArr_complex, kernalPadding_doubleArr_complex,result_doubleArr_complex,(R_mask+R_kernal-1), (C_mask+C_kernal-1));
 	
 	output_pointers[0] = mxCreateDoubleMatrix((R_mask+R_kernal-1),(C_mask+C_kernal-1), mxREAL);

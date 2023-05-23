@@ -1,9 +1,9 @@
 clc;clear;
-a =rand(300,100);
-b = rand(90,70);
-
+a =rand(7895,7274);
+b = rand(1234,3540);
+tic
 fftw_fft = fft_conv2d(a,b);
-
+toc
 %% 【CPU】org conv.
 %post_conv = conventional_conv2d_full(a,b);
 %%
@@ -12,7 +12,9 @@ a_zp = zeros(ma+mb-1, na+nb-1);
 b_zp = zeros(ma+mb-1, na+nb-1);
 a_zp(1:ma, 1:na)=a;
 b_zp(1:mb, 1:nb)=b;
+tic
 matlab_fft = ifft2(fft2(a_zp).*fft2(b_zp));
+toc
 sum(sum(fftw_fft)) - sum(sum(matlab_fft))
 %% 【CPU】FFT conv.
 [a_r,a_c] = fft_2d(a_zp);
