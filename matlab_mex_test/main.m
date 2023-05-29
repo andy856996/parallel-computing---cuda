@@ -1,7 +1,7 @@
 clc;clear;
 %mexcuda  mexGPUExample.cu
-a =ones(2000,2000) ;
-b = ones(2000,2000);
+a =ones(6000,6000) ;
+b = ones(6000,6000);
 
 %% 【CPU】 matlab conv2d
 [ma,na]=size(a);[mb,nb]=size(b);

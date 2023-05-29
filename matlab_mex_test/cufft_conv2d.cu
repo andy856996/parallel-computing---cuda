@@ -117,7 +117,10 @@ void mexFunction(int nlhs, mxArray *plhs[],
 	cudaMalloc((void**)&kernel_gpu, R * C * sizeof(double));
 	cudaMemcpy(mask_gpu, mask, sizeof(double) * R * C, cudaMemcpyHostToDevice);
 	cudaMemcpy(kernel_gpu, kernel, sizeof(double) * R * C, cudaMemcpyHostToDevice);
-
+	
+	free(mask);
+	free(kernel);
+	
     cufftDoubleComplex* mask_complex_gpu;
     cufftDoubleComplex* kernal_complex_gpu;
     cufftDoubleComplex* result_complex_gpu;
@@ -149,6 +152,8 @@ void mexFunction(int nlhs, mxArray *plhs[],
     mult_complex_arr<<<blocksPerGrid, threadsPerBlock>>>(mask_complex_gpu, kernal_complex_gpu,result_complex_gpu, R * C);
 	
 	/*free memroy*/
+	cufftDestroy(kernal_plan);
+	cufftDestroy(mask_plan);
 	cufftDestroy(mask_result);
 	cufftDestroy(kernal_result);
 	cudaFree(mask_complex_gpu);
@@ -169,6 +174,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
 	
 	/*free memroy*/
 	cufftDestroy(resultifft_plan);
+	cufftDestroy(resultifft_result);
 	cudaFree(result_complex_gpu);
 	cudaFree(result_output_gpu);
 	/*free memroy*/
