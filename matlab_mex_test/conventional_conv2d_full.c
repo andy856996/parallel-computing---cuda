@@ -1,5 +1,9 @@
-
-//conv2(a,b,'full')
+/*
+Developer : LAI,WEI-LIN
+National Taitung Unv. IPGIT
+Date : 2023/5/30
+Email : 10822112@gm.nttu.edu.tw
+*/
 #include <omp.h>
 #include <stdio.h>
 #include <string.h>

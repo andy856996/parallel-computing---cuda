@@ -1,18 +1,22 @@
-/*----------------------------------------------
-create by Ding Ze An
-Date : 2023 5 23
+/*
+Developer : LAI,WEI-LIN
 National Taitung Unv. IPGIT
-Email : andy856996@gamil.com
-----------------------------------------------*/
-#include <omp.h>
+Date : 2023/5/30
+Email : 10822112@gm.nttu.edu.tw
+*/
 #include <stdio.h>
 #include <string.h>
 #include "mex.h"
+#include <omp.h>
 
-void convolution2D(double *mask, double *kernel, double *output, int m_row, int m_col, int k_row, int k_col) {
+#include <omp.h>
+
+void convolution2D(double* mask, double* kernel, double* output, int m_row, int m_col, int k_row, int k_col) {
     int i, j, m, n;
     int o_row = m_row + k_row - 1;
     int o_col = m_col + k_col - 1;
+
+    #pragma omp parallel for private(i, j, m, n) shared(mask, kernel, output)
     for (i = 0; i < o_row; i++) {
         for (j = 0; j < o_col; j++) {
             double temp = 0.0;
@@ -32,6 +36,7 @@ void convolution2D(double *mask, double *kernel, double *output, int m_row, int 
         }
     }
 }
+
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     double *mask;

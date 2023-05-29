@@ -1,3 +1,9 @@
+/*----------------------------------------------
+create by Ding Ze An
+Date : 2023 5 23
+National Taitung Unv. IPGIT
+Email : andy856996@gamil.com
+----------------------------------------------*/
 #include <iostream>
 #include <cufft.h>
 #include "mex.h"
