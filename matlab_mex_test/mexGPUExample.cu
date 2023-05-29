@@ -5,7 +5,7 @@
  *
  * Copyright 2012 The MathWorks, Inc.
  */
-
+#include <cufft.h>
 #include "mex.h"
 #include "gpu/mxGPUArray.h"
 
@@ -79,8 +79,12 @@ void mexFunction(int nlhs, mxArray *plhs[],
      * the grid. For this example we are not guarding against this possibility.
      */
     N = (int)(mxGPUGetNumberOfElements(A));
+	
     blocksPerGrid = (N + threadsPerBlock - 1) / threadsPerBlock;
     TimesTwo<<<blocksPerGrid, threadsPerBlock>>>(d_A, d_B, N);
+	
+	cufftHandle plan;
+	
 
     /* Wrap the result up as a MATLAB gpuArray for return. */
     plhs[0] = mxGPUCreateMxArrayOnGPU(B);
