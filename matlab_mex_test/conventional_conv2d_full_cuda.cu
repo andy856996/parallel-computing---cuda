@@ -58,18 +58,18 @@ __global__ static void convolution2D_CUDA
 __global__ static void GPUArr2MatlabArr(double* output ,double* input,int R,int C){
 	const int j = blockDim.x * blockIdx.x+threadIdx.x;
 	const int i = blockDim.y * blockIdx.y+threadIdx.y;
-	if(i < row && j < col){
-		output[j * o_row + i] = input[i * o_col + j];
+	if(i < R && j < C){
+		output[j * R + i] = input[i * C + j];
 	}
 }
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     double *mask;
-    double *kernel;
+    double *kernal;
     double *output;
     int mrows, mcols, krows, kcols;
 
     mask = mxGetPr(prhs[0]);
-    kernel = mxGetPr(prhs[1]);
+    kernal = mxGetPr(prhs[1]);
 
     mrows = mxGetM(prhs[0]);
     mcols = mxGetN(prhs[0]);
@@ -83,6 +83,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     plhs[0] = mxCreateDoubleMatrix(mrows + krows - 1, mcols + kcols - 1, mxREAL);
     output = mxGetPr(plhs[0]);
 	
+	double* mask_gpu;double* kernal_gpu;double* output_gpu;
 	cudaMalloc((void**)&mask_gpu, mrows * mcols * sizeof(double));
 	cudaMalloc((void**)&kernal_gpu, krows * kcols* sizeof(double));
 	cudaMalloc((void**)&output_gpu, output_dim_R * output_dim_C * sizeof(double));
@@ -97,8 +98,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	cudaFree(mask_gpu);
 	cudaFree(kernal_gpu);
 	
+	double* outputFinal_gpu;
 	cudaMalloc((void**)&outputFinal_gpu, output_dim_R * output_dim_C * sizeof(double));
-	GPUArr2MatlabArr<<<grid,threads>>>(outputFinal_gpu,output_gpu,R,C);
+	GPUArr2MatlabArr<<<grid,threads>>>(outputFinal_gpu,output_gpu,output_dim_R,output_dim_C);
 	cudaFree(output_gpu);
 	
 	cudaMemcpy(output, outputFinal_gpu,output_dim_R * output_dim_C * sizeof(double), cudaMemcpyDeviceToHost);
