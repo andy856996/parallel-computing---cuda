@@ -1,8 +1,9 @@
 /*----------------------------------------------
-create by Ding Ze An
+create by LAI,WEI-LIN mod by Ding Ze An(apply CUDA)
 Date : 2023 5 23
 National Taitung Unv. IPGIT
-Email : andy856996@gamil.com
+Email : andy856996@gamil.com(Ding Ze An)
+Email : 10822112@gm.nttu.edu.tw(LAI,WEI-LIN)
 ----------------------------------------------*/
 #include <omp.h>
 #include <stdio.h>
