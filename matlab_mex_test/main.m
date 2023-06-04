@@ -1,10 +1,10 @@
 clc;clear;figure;
 %mexcuda  mexGPUExample.cu
 idx = 1;
-for i = [10 50 100 200 300 400]
+for i = [10 50 100 200 300]
     dim = i;
-    a =ones(dim,dim) ;
-    b = ones(dim,dim);    
+    a =rand(dim,dim) ;
+    b = rand(dim,dim);    
     [ma,na]=size(a);[mb,nb]=size(b);
     a_zp = zeros(ma+mb-1, na+nb-1);
     b_zp = zeros(ma+mb-1, na+nb-1);
@@ -43,7 +43,7 @@ for i = [10 50 100 200 300 400]
     %% plot figure
     semilogy([matlab_conv_time org_conv_time org_conv_time_omp  org_conv_GPU_time...
        fftw_cpu_time fft_matlab_time fftcufft_time],'-o')
-    xticks([1 2 3 4 5 6 7]);xticklabels({'conv2(matlab)','conv2(C)','conv2(C OMP)','conv2(cuda)',...
+    xticks([1 2 3 4 5 6 7]);xticklabels({'conv2(matlab)','conv2(C)','conv2(C OMP)','conv2(cuda)', ...
         'fftw(C)','fft(matlab)','fft(cuda)'});
     set(gca,'FontSize',15,'FontName','Times New Roman');xlabel('Method');ylabel('Time(s)');
     legend_cell{idx} =  ['dimension' num2str(dim) 'X' num2str(dim)];hold on;

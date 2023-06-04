@@ -9,32 +9,8 @@ Email : 10822112@gm.nttu.edu.tw(LAI,WEI-LIN)
 #include <stdio.h>
 #include <string.h>
 #include "mex.h"
-
-void convolution2D(double *mask, double *kernel, double *output, int m_row, int m_col, int k_row, int k_col) {
-    int i, j, m, n;
-    int o_row = m_row + k_row - 1;
-    int o_col = m_col + k_col - 1;
-    for (i = 0; i < o_row; i++) {
-        for (j = 0; j < o_col; j++) {
-            double temp = 0.0;
-            for (m = 0; m < k_row; m++) {
-                for (n = 0; n < k_col; n++) {
-                    int mask_row = i - m;
-                    int mask_col = j - n;
-
-                    if (mask_row >= 0 && mask_row < m_row && mask_col >= 0 && mask_col < m_col) {
-                        int mask_index = mask_row * m_col + mask_col;
-                        int kernel_index = m * k_col + n;
-                        temp += mask[mask_index] * kernel[kernel_index];
-                    }
-                }
-            }
-            output[i * o_col + j] = temp;
-        }
-    }
-}
 __global__ static void convolution2D_CUDA
-(double *mask, double *kernel, double *output, int m_row, int m_col, int k_row, int k_col){
+(double *mask, double *kernel,double* outfinal, int m_row, int m_col, int k_row, int k_col){
 	int m, n;
 	const int j = blockDim.x * blockIdx.x+threadIdx.x;
 	const int i = blockDim.y * blockIdx.y+threadIdx.y;
@@ -53,15 +29,9 @@ __global__ static void convolution2D_CUDA
 				}
 			}
 		}
-		output[i * o_col + j] = temp;
+		outfinal[j * o_row + i] = temp;
 	}
-}
-__global__ static void GPUArr2MatlabArr(double* output ,double* input,int R,int C){
-	const int j = blockDim.x * blockIdx.x+threadIdx.x;
-	const int i = blockDim.y * blockIdx.y+threadIdx.y;
-	if(i < R && j < C){
-		output[j * R + i] = input[i * C + j];
-	}
+	
 }
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     double *mask;
@@ -85,26 +55,22 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     output = mxGetPr(plhs[0]);
 	
 	double* mask_gpu;double* kernal_gpu;double* output_gpu;
+	double* outputFinal_gpu;
 	cudaMalloc((void**)&mask_gpu, mrows * mcols * sizeof(double));
 	cudaMalloc((void**)&kernal_gpu, krows * kcols* sizeof(double));
-	cudaMalloc((void**)&output_gpu, output_dim_R * output_dim_C * sizeof(double));
+	cudaMalloc((void**)&outputFinal_gpu, output_dim_R * output_dim_C * sizeof(double));
+	
 	cudaMemcpy(mask_gpu, mask, mrows * mcols * sizeof(double), cudaMemcpyHostToDevice);
 	cudaMemcpy(kernal_gpu, kernal, krows * kcols* sizeof(double), cudaMemcpyHostToDevice);
 	
 	const int threadNum = 32;
 	dim3 threads(threadNum, threadNum, 1); 
 	dim3 grid((output_dim_C + threads.x - 1) / threads.x, (output_dim_R + threads.y - 1) / threads.y, 1);
-	convolution2D_CUDA<<<grid,threads>>>(mask_gpu, kernal_gpu, output_gpu, mrows, mcols, krows, kcols);
+	convolution2D_CUDA<<<grid,threads>>>(mask_gpu, kernal_gpu,outputFinal_gpu, mrows, mcols, krows, kcols);
 	
 	cudaFree(mask_gpu);
 	cudaFree(kernal_gpu);
 	
-	double* outputFinal_gpu;
-	cudaMalloc((void**)&outputFinal_gpu, output_dim_R * output_dim_C * sizeof(double));
-	GPUArr2MatlabArr<<<grid,threads>>>(outputFinal_gpu,output_gpu,output_dim_R,output_dim_C);
-	cudaFree(output_gpu);
-	
 	cudaMemcpy(output, outputFinal_gpu,output_dim_R * output_dim_C * sizeof(double), cudaMemcpyDeviceToHost);
-	
     cudaFree(outputFinal_gpu);
 }
