@@ -1,3 +1,9 @@
+#----------------------------------------------#
+# create by Shun-Pin,Yeh
+# Date : 2023 5 23
+# National Taitung Unv. IPGIT
+# Email : 10922127@gm.nttu.edu.tw
+#----------------------------------------------#
 import numpy as np
 import cupy as cp
 import cupyx.scipy.fft as cufft
