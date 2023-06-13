@@ -2,7 +2,7 @@ clc;clear;figure;
 cpu_fft_conv2d = py.importlib.import_module('fft_convolve2d');
 gpu_fft_conv2d = py.importlib.import_module('gpu_fft_convolve2D');
 idx = 1;
-for i = 1000:1000:5000
+for i = 1000
     dim = i;
     a =rand(dim,dim) ;
     b = rand(dim,dim);    
@@ -40,14 +40,14 @@ for i = 1000:1000:5000
     % fft_matlab_time = toc;
     %【CPU】python fft conv
     tic;
-    py_result_cpu_fft = cpu_fft_conv2d.fft_conv2d(a, b);
+    py_result_cpu_fft = cpu_fft_conv2d.fft_conv2d(a_zp, b_zp);
     py_result_cpu_fft_time = toc;
     sh = double(py.array.array('d',py_result_cpu_fft.shape));
     npary1 = double(py.array.array('d',py.numpy.nditer(py_result_cpu_fft)));
     result_cpu_fft_mat = reshape(npary1,fliplr(sh))';  % matlab 2d array
     %【GPU】python fft conv library-cupy
     tic;
-    py_result_gpu_fft = gpu_fft_conv2d.gpu_fft_convolve2D(a, b);
+    py_result_gpu_fft = gpu_fft_conv2d.gpu_fft_convolve2D(a_zp, b_zp);
     py_result_gpu_fft_time = toc;
     sh = double(py.array.array('d',py_result_gpu_fft.shape));
     npary1 = double(py.array.array('d',py.numpy.nditer(py_result_gpu_fft)));

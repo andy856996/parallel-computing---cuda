@@ -180,5 +180,4 @@ void mexFunction(int nlhs, mxArray *plhs[],
 	/*free memroy*/
 	
 	mexPrintf("Memory cleanup completed, return: %d\n", cudaThreadExit());
-    return;
 }
