@@ -83,7 +83,6 @@ for i = 1000:1000:5000
     fig_path = [path 'fig_' num2str(i) '.fig'];
     saveas(fig,fig_path)
     close(fig);
-    dev.reset;
 end
 legend(legend_cell);
 dev.reset;
