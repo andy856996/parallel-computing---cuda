@@ -179,5 +179,5 @@ void mexFunction(int nlhs, mxArray *plhs[],
 	cudaFree(result_output_gpu);
 	/*free memroy*/
 	
-	mexPrintf("Memory cleanup completed, return: %d\n", cudaThreadExit());
+	//mexPrintf("Memory cleanup completed, return: %d\n", cudaThreadExit());
 }

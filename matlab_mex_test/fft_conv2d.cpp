@@ -1,5 +1,5 @@
 /*----------------------------------------------
-create by Ding Ze An
+create by Ding Ze An,Apply OMP lib : Huang,Yu-Tse
 Date : 2023 5 23
 National Taitung Unv. IPGIT
 Email : andy856996@gamil.com
@@ -16,6 +16,7 @@ Email : andy856996@gamil.com
 #include <iterator>
 #include <algorithm>
 #include <ctime>
+#include <omp.h>
 
 #include "fftw3.h"
 #include "mex.h"
@@ -23,6 +24,7 @@ Email : andy856996@gamil.com
 using namespace std;
 
 void complex_mat_multiplication(fftw_complex *matrix1, fftw_complex *matrix2,fftw_complex *result , int len){
+	#pragma omp parallel for private(i) shared(result, matrix1,matrix2)
 	for (int i = 0; i < len; i++)
 	{
 		// Perform complex multiplication
@@ -58,6 +60,7 @@ void print_arr(double *inMatrix,int len){
     }
 }
 void put_data_in_comMat(double *input,double *output,int R,int C){
+	#pragma omp parallel for private(i, j) shared(input, output)
 	for (int i = 0; i < R; i++) {
 		for (int j = 0;j<C;j++){
 			output[(C*2)*i+j*2] = input[i+j*R];
@@ -66,6 +69,7 @@ void put_data_in_comMat(double *input,double *output,int R,int C){
     }
 }
 void put_mat_toMATLAB_mat(double *in,double *out,int R,int C){
+	#pragma omp parallel for private(i, j) shared(in, out)
 	for (int i = 0; i < R; i++) {
 		for (int j = 0;j<C;j++){
 			//out[i*C+j] = in[i+j*R];
@@ -74,6 +78,7 @@ void put_mat_toMATLAB_mat(double *in,double *out,int R,int C){
     }
 }
 void padding_FFT_conv(double *Mat,double *paddingMat,int R,int C,int R_padding,int C_padding){
+	#pragma omp parallel for private(i, j) shared(paddingMat, Mat)
 	for (int i = 0; i < R; i++) {
 		for (int j = 0;j<C;j++){
 			paddingMat[i*C_padding+j] = Mat[i*C+j];
@@ -81,6 +86,7 @@ void padding_FFT_conv(double *Mat,double *paddingMat,int R,int C,int R_padding,i
     }
 }
 void take_realVar_matCom_devideN(double*input_complex,double *output,int R,int C){
+	#pragma omp parallel for private(i, j) shared(output, input_complex)
 	for (int i = 0; i < R; i++) {
 		for (int j = 0;j<C;j++){
 			output[i*C+j] = input_complex[i*C*2+j*2]/(R*C);

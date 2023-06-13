@@ -7,7 +7,6 @@ Email : 10822112@gm.nttu.edu.tw
 #include <stdio.h>
 #include <string.h>
 #include "mex.h"
-#include <omp.h>
 
 #include <omp.h>
 
