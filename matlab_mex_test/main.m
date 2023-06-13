@@ -2,7 +2,7 @@ clc;clear;figure;
 cpu_fft_conv2d = py.importlib.import_module('fft_convolve2d');
 gpu_fft_conv2d = py.importlib.import_module('gpu_fft_convolve2D');
 idx = 1;
-for i = 2000:1000:5000
+for i = 1000:1000:5000
     dim = i;
     a =rand(dim,dim) ;
     b = rand(dim,dim);    
@@ -47,7 +47,7 @@ for i = 2000:1000:5000
     result_cpu_fft_mat = reshape(npary1,fliplr(sh))';  % matlab 2d array
     %【GPU】python fft conv library-cupy
     tic;
-    py_result_gpu_fft = cpu_fft_conv2d.fft_conv2d(a, b);
+    py_result_gpu_fft = gpu_fft_conv2d.gpu_fft_convolve2D(a, b);
     py_result_gpu_fft_time = toc;
     sh = double(py.array.array('d',py_result_gpu_fft.shape));
     npary1 = double(py.array.array('d',py.numpy.nditer(py_result_gpu_fft)));
@@ -64,7 +64,7 @@ for i = 2000:1000:5000
     % % set(gca,'FontSize',20,'FontName','Times New Roman');xlabel('Method');ylabel('Time(s)');
     % % legend_cell{idx} =  ['dimension ' num2str(dim) 'x' num2str(dim)];hold on;
     % % idx = idx + 1;
-
+ 
     semilogy([py_result_cpu_fft_time fftcufft_time py_result_gpu_fft_time],'-o')
     xticks([1 2 3 4 5]);xticklabels({'fft(python cpu)','fft(gpu cufft)','fft(python gpu cupy)'});
     set(gca,'FontSize',20,'FontName','Times New Roman');xlabel('Method');ylabel('Time(s)');
